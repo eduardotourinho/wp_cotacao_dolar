@@ -28,11 +28,8 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 	 * @param array $instance
 	 */
 	public function widget( $args, $instance ) {
-		$taxaImportacao = 10;
-		$taxaExportacao = 15;
-
-		$cotacaoDolarImportacao = $catacaoDolarExportacao = $cotacaoEuroImportacao = $cotacaoEuroExportacao = 0;
-		$dataCotacaoDolar = new DateTime();
+		$taxaImportacao = $instance['taxa_importacao'];
+		$taxaExportacao = $instance['taxa_exportacao'];
 
 		try {
 			$cotacoes = $this->getCotacoesFromBCB();
@@ -45,7 +42,7 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 			$cotacaoDolarImportacao = round($cotacaoDolar + ($cotacaoDolar * ($taxaImportacao/100)), 2);
 			$cotacaoEuroImportacao = round($cotacaoEuro + ($cotacaoEuro * ($taxaImportacao/100)), 2);
 
-			$catacaoDolarExportacao = round($cotacaoDolar + ($cotacaoDolar * ($taxaExportacao/100)), 2);
+			$cotacaoDolarExportacao = round($cotacaoDolar + ($cotacaoDolar * ($taxaExportacao/100)), 2);
 			$cotacaoEuroExportacao = round($cotacaoEuro + ($cotacaoEuro * ($taxaExportacao/100)), 2);
 
 			$htmlCotacao = '
@@ -66,7 +63,7 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 				<div class="container">
 					<h3>Exportação</h3>
 					<div class="cotacao_dolar_widget">
-						<p class="lead cotacao_dolar_titulo">USD: <span class="cotacao_dolar_valor"> '. money_format('%.2n', $catacaoDolarExportacao) . '</span></p>			
+						<p class="lead cotacao_dolar_titulo">USD: <span class="cotacao_dolar_valor"> '. money_format('%.2n', $cotacaoDolarExportacao) . '</span></p>			
 					</div>
 					<div class="cotacao_euro_widget">
 						<p class="lead cotacao_euro_titulo">EUR: <span class="cotacao_euro_valor">'. money_format('%.2n', $cotacaoEuroExportacao) .'</span></p>			
@@ -79,11 +76,8 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 			$htmlCotacao = '<div class="alert"><p>Desculpe, a cotação está indisponível no momento</p></div>';
 		}
 
-		echo '<div class="container">
+		echo '<div class="container isb-cotacoes">
 	<div class="row">
-		<div class="col-md-12">
-			<h1>Cotações</h1>
-		</div> 
 		<div class="col-md-12">
 		' . $htmlCotacao. '
 		</div>
@@ -126,7 +120,21 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 	 * @return string|void
 	 */
 	public function form( $instance ) {
+
 		// outputs the options form on admin
+		$taxaImportacao = ($instance && array_key_exists('taxa_importacao', $instance)) ? $instance['taxa_importacao'] : 10;
+		$taxaExportacao = ($instance && array_key_exists('taxa_exportacao', $instance)) ? $instance['taxa_exportacao'] : 15;
+
+		echo "
+		<div>
+			<label for=\"{$this->get_field_id('taxa_importacao')}\">Taxa de Importação: </label>
+			<input type=\"number\" step='1' min='1' id=\"{$this->get_field_id('taxa_importacao')}\" name=\"{$this->get_field_name('taxa_importacao')}\" value=\"{$taxaImportacao}\">
+		</div>
+		<div>
+			<label for=\"{$this->get_field_id('taxa_exportacao')}\">Taxa de Exportacao: </label>
+			<input type=\"number\" step='1' min='1' id=\"{$this->get_field_id('taxa_exportacao')}\" name=\"{$this->get_field_name('taxa_exportacao')}\" value=\"{$taxaExportacao}\">
+		</div>
+		";
 	}
 
 	/**
@@ -138,5 +146,6 @@ class ISB_Cotacao_Dolar_Widget extends WP_Widget {
 	 */
 	public function update( $new_instance, $old_instance ) {
 		// processes widget options to be saved
+		return $new_instance;
 	}
 }
