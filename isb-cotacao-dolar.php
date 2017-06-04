@@ -2,7 +2,7 @@
 /*
 Plugin Name: ISB Cotação Importação/Exportação
 Description: Cotação do dólar e euro com cálculo de acréscimos estipulados pela empresa ISB
-Version: 1.3
+Version: 1.4
 Author: Eduardo Tourinho
 License: GPL2
 */
